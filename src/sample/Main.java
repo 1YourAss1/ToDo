@@ -13,7 +13,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("view/mainView.fxml"));
         primaryStage.setTitle("ToDo");
         primaryStage.setResizable(false);
-        primaryStage.setScene(new Scene(root, 400, 600));
+        primaryStage.setScene(new Scene(root, 400, 400));
         primaryStage.show();
     }
 

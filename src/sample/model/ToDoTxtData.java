@@ -1,14 +1,11 @@
 package sample.model;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ToDoTxtData {
-    private File toDoTxtFile = null;
+    private final File toDoTxtFile;
 
     public ToDoTxtData() {
         this.toDoTxtFile = new File("todo.txt");
@@ -22,18 +19,22 @@ public class ToDoTxtData {
         }
     }
 
-    public ArrayList<Task> getDataFromToDoTxt() {
-        ArrayList<Task> list = new ArrayList<>();
+    public ArrayList<String> getDataFromToDoTxt() {
+        ArrayList<String> taskArrayList = new ArrayList<>();
         try {
-            Scanner s = new Scanner(toDoTxtFile);
-            while (s.hasNext()){
-                list.add(new Task(s.next()));
+            FileReader reader = new FileReader(toDoTxtFile);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line = bufferedReader.readLine();
+            taskArrayList.add(new Task(line).toString());
+            while (line != null) {
+                line = bufferedReader.readLine();
+                taskArrayList.add(new Task(line).toString());
             }
-            s.close();
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return list;
+        taskArrayList.remove(taskArrayList.size() - 1);
+        return taskArrayList;
     }
 
     public void addDataToToDoTxt(Task task) {
@@ -41,6 +42,24 @@ public class ToDoTxtData {
             FileWriter writer = new FileWriter(toDoTxtFile, true);
             BufferedWriter bufferWriter = new BufferedWriter(writer);
             bufferWriter.write(task.toString() + "\n");
+            bufferWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeDataFromToDoTxt(int id) {
+        ArrayList<String> taskArrayList = this.getDataFromToDoTxt();
+        taskArrayList.remove(id);
+        try {
+            FileWriter writer = new FileWriter(toDoTxtFile);
+            BufferedWriter bufferWriter = new BufferedWriter(writer);
+            bufferWriter.write("");
+            writer = new FileWriter(toDoTxtFile, true);
+            bufferWriter = new BufferedWriter(writer);
+            for (String task : taskArrayList) {
+                bufferWriter.write(task + "\n");
+            }
             bufferWriter.close();
         } catch (Exception e) {
             e.printStackTrace();
