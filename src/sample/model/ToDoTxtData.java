@@ -25,15 +25,13 @@ public class ToDoTxtData {
             FileReader reader = new FileReader(toDoTxtFile);
             BufferedReader bufferedReader = new BufferedReader(reader);
             String line = bufferedReader.readLine();
-            taskArrayList.add(new Task(line).toString());
-            while (line != null) {
+            while (line != null && !line.isEmpty()) {
+                taskArrayList.add(new Task(line).getTask());
                 line = bufferedReader.readLine();
-                taskArrayList.add(new Task(line).toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        taskArrayList.remove(taskArrayList.size() - 1);
         return taskArrayList;
     }
 

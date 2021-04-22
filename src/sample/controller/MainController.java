@@ -1,16 +1,11 @@
 package sample.controller;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import sample.model.Task;
 import sample.model.ToDoTxtData;
 
