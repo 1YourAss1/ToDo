@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<SplitPane dividerPositions="0.5" orientation="VERTICAL" xmlns="http://javafx.com/javafx/8.0.282" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.MainController">
+<SplitPane dividerPositions="0.5" orientation="VERTICAL" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.MainController">
    <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="45.0" prefWidth="400.0">
-      <TextField fx:id="textFieldNewTask" layoutX="10.0" layoutY="10.0" onAction="#onEnter" prefHeight="25.0" prefWidth="380.0" promptText="Enter new task" />
+      <TextField fx:id="textFieldNewTask" layoutX="75.0" layoutY="10.0" onAction="#onEnter" prefHeight="25.0" prefWidth="315.0" promptText="Enter new task" />
+      <ComboBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="55.0" />
    </AnchorPane>
-   <ListView fx:id="listViewTasks"/>
+   <ListView fx:id="listViewTasks" />
 </SplitPane>
