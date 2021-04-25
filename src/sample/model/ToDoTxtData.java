@@ -19,14 +19,14 @@ public class ToDoTxtData {
         }
     }
 
-    public ArrayList<String> getDataFromToDoTxt() {
-        ArrayList<String> taskArrayList = new ArrayList<>();
+    public ArrayList<Task> getDataFromToDoTxt() {
+        ArrayList<Task> taskArrayList = new ArrayList<>();
         try {
             FileReader reader = new FileReader(toDoTxtFile);
             BufferedReader bufferedReader = new BufferedReader(reader);
             String line = bufferedReader.readLine();
             while (line != null && !line.isEmpty()) {
-                taskArrayList.add(new Task(line).getTask());
+                taskArrayList.add(new Task(line));
                 line = bufferedReader.readLine();
             }
         } catch (IOException e) {
@@ -47,7 +47,7 @@ public class ToDoTxtData {
     }
 
     public void removeDataFromToDoTxt(int id) {
-        ArrayList<String> taskArrayList = this.getDataFromToDoTxt();
+        ArrayList<Task> taskArrayList = this.getDataFromToDoTxt();
         taskArrayList.remove(id);
         try {
             FileWriter writer = new FileWriter(toDoTxtFile);
@@ -55,8 +55,8 @@ public class ToDoTxtData {
             bufferWriter.write("");
             writer = new FileWriter(toDoTxtFile, true);
             bufferWriter = new BufferedWriter(writer);
-            for (String task : taskArrayList) {
-                bufferWriter.write(task + "\n");
+            for (Task task : taskArrayList) {
+                bufferWriter.write(task.toString() + "\n");
             }
             bufferWriter.close();
         } catch (Exception e) {

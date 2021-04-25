@@ -2,7 +2,6 @@ package sample.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -17,62 +16,67 @@ public class MainController implements Initializable {
     @FXML
     TextField textFieldNewTask;
     @FXML
-    ListView<String> listViewTasks;
+    ListView<Task> listViewTasks;
+    @FXML
+    ComboBox<String> priorityComboBox;
 
-    ObservableList<String> taskObservableList = FXCollections.observableArrayList();
+    ObservableList<String> prioritiesObservableList = FXCollections.observableArrayList();
+    ObservableList<Task> taskObservableList = FXCollections.observableArrayList();
 
     ToDoTxtData toDoTxtData = new ToDoTxtData();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Fill priority ComboBox
+        ArrayList<String> priorityArrayList = new ArrayList<>();
+        for (char c = 'A'; c <= 'Z'; c++) priorityArrayList.add("(" + c + ")");
+        prioritiesObservableList.addAll(priorityArrayList.toArray(new String[0]));
+        priorityComboBox.getItems().setAll(prioritiesObservableList);
+
+        // Add data to ListView
         refreshListView();
 
-        listViewTasks.setCellFactory(lv -> {
-
-            ListCell<String> cell = new ListCell<>();
+        // Custom ListView
+        listViewTasks.setCellFactory(taskListView -> {
+            TaskListViewCellController taskListViewCell = new TaskListViewCellController();
 
             ContextMenu contextMenu = new ContextMenu();
 
-//            MenuItem editItem = new MenuItem();
-//            editItem.textProperty().bind(Bindings.format("Edit \"%s\"", cell.itemProperty()));
-//            editItem.setOnAction(event -> {
-//                // code to edit item...
-//            });
-
+            // Delete item in ContextMenu
             MenuItem deleteItem = new MenuItem();
             deleteItem.setText("Delete");
             deleteItem.setOnAction(event -> {
-                toDoTxtData.removeDataFromToDoTxt(cell.getIndex());
+                System.out.println("tick");
+                System.out.println(taskListViewCell.getIndex());
+                toDoTxtData.removeDataFromToDoTxt(taskListViewCell.getIndex());
                 refreshListView();
-//                listViewTasks.getItems().remove(cell.getItem());
             });
 
             contextMenu.getItems().addAll(deleteItem);
 
-            cell.textProperty().bind(cell.itemProperty());
+            taskListViewCell.setContextMenu(contextMenu);
 
-            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
-                if (isNowEmpty) {
-                    cell.setContextMenu(null);
-                } else {
-                    cell.setContextMenu(contextMenu);
-                }
-            });
-            return cell ;
+            return taskListViewCell;
         });
-
     }
 
 
     @FXML
-    public void onEnter(ActionEvent event){
-        toDoTxtData.addDataToToDoTxt(new Task(textFieldNewTask.getText()));
+    public void onEnter(){
+        // Create task string
+        StringBuilder strTask = new StringBuilder();
+        if (priorityComboBox.getSelectionModel().getSelectedIndex() != -1) strTask.append(priorityComboBox.getSelectionModel().getSelectedItem()).append(" ");
+        strTask.append(textFieldNewTask.getText());
+        // Add and refresh
+        toDoTxtData.addDataToToDoTxt(new Task(strTask.toString()));
         refreshListView();
+        // Clear fo new task
         textFieldNewTask.setText(null);
+        priorityComboBox.getSelectionModel().clearSelection();
     }
 
     private void refreshListView() {
-        ArrayList<String> arrayList = toDoTxtData.getDataFromToDoTxt();
+        ArrayList<Task> arrayList = toDoTxtData.getDataFromToDoTxt();
         taskObservableList = FXCollections.observableArrayList(arrayList);
         listViewTasks.setItems(taskObservableList);
     }

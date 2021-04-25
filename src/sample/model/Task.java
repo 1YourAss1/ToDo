@@ -69,6 +69,9 @@ public class Task {
 
     @Override
     public String toString() {
-        return task;
+        StringBuilder stringBuilder = new StringBuilder();
+        if (priority != null) stringBuilder.append(priority).append(" ");
+        stringBuilder.append(task);
+        return stringBuilder.toString();
     }
 }
