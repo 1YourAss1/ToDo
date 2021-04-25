@@ -46,8 +46,6 @@ public class MainController implements Initializable {
             MenuItem deleteItem = new MenuItem();
             deleteItem.setText("Delete");
             deleteItem.setOnAction(event -> {
-                System.out.println("tick");
-                System.out.println(taskListViewCell.getIndex());
                 toDoTxtData.removeDataFromToDoTxt(taskListViewCell.getIndex());
                 refreshListView();
             });

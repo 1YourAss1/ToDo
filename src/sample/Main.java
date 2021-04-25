@@ -13,7 +13,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader loader = new FXMLLoader(getClass().getResource("view/mainView.fxml"));
         Parent root = loader.load();
-
+//        root.getStylesheets().addAll("style.css");
         primaryStage.setTitle("ToDo");
         primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(root, 400, 400));

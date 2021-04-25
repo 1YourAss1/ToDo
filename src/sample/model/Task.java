@@ -8,13 +8,12 @@ public class Task {
     private String priority, toDate;
     private final String task;
     private final ArrayList<String> projects;
-    private final ArrayList<String> labels;
-
+    private final ArrayList<String> tags;
 
     public Task(String strTask) {
         Matcher matcher;
         projects = new ArrayList<>();
-        labels = new ArrayList<>();
+        tags = new ArrayList<>();
         String[] splitStrTask = strTask.trim().split(" ");
 
         StringBuilder taskBuilder = new StringBuilder();
@@ -26,29 +25,36 @@ public class Task {
 
             // Parse projects
             matcher = Pattern.compile("^\\+").matcher(word);
-            if (matcher.find()) { projects.add(matcher.group()); continue; }
+            if (matcher.find()) { projects.add(word.substring(1)); continue; }
 
             // Parse labels
             matcher = Pattern.compile("^@").matcher(word);
-            if (matcher.find()) { labels.add(matcher.group()); continue; }
-
-            // Parse labels
-            matcher = Pattern.compile("^@").matcher(word);
-            if (matcher.find()) { labels.add(matcher.group()); continue; }
+            if (matcher.find()) { tags.add(word.substring(1)); continue; }
 
             // Parse toDate
             matcher = Pattern.compile("^due:").matcher(word);
-            if (matcher.find()) { toDate = matcher.group(); continue; }
+            if (matcher.find()) { toDate = word.substring(4); continue; }
 
             taskBuilder.append(word).append(" ");
         }
 
 
-        this.task = taskBuilder.toString().trim();
+        task = taskBuilder.toString().trim();
     }
 
-    public String getPriority() {
+    public String getStringPriority() {
         return priority;
+    }
+
+    public int getIntPriority() {
+        if (priority != null) {
+            Matcher matcher = Pattern.compile("[A-Z]").matcher(priority);
+            matcher.find();
+            char c = matcher.group().toCharArray()[0];
+            return c;
+        } else {
+            return -1;
+        }
     }
 
     public String getTask() {
@@ -59,8 +65,8 @@ public class Task {
         return projects;
     }
 
-    public ArrayList<String> getLabels() {
-        return labels;
+    public ArrayList<String> getTags() {
+        return tags;
     }
 
     public String getToDate() {
@@ -72,6 +78,17 @@ public class Task {
         StringBuilder stringBuilder = new StringBuilder();
         if (priority != null) stringBuilder.append(priority).append(" ");
         stringBuilder.append(task);
+        if (!projects.isEmpty()) {
+            for (String project : projects) {
+                stringBuilder.append(" ").append("+").append(project);
+            }
+        }
+        if (!tags.isEmpty()) {
+            for (String tag : tags) {
+                stringBuilder.append(" ").append("@").append(tag);
+            }
+        }
+        if (toDate != null) stringBuilder.append(" ").append("due:").append(toDate);
         return stringBuilder.toString();
     }
 }
