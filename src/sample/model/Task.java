@@ -1,12 +1,14 @@
 package sample.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Task {
+    private boolean done;
     private String priority, toDate;
-    private final String task;
+    private String task;
     private final ArrayList<String> projects;
     private final ArrayList<String> tags;
 
@@ -14,11 +16,19 @@ public class Task {
         Matcher matcher;
         projects = new ArrayList<>();
         tags = new ArrayList<>();
-        String[] splitStrTask = strTask.trim().split(" ");
+        ArrayList<String> splitStrTask = new ArrayList<>(Arrays.asList(strTask.trim().split(" ")));
+
+        // Parsing
+        // Parse isDone
+        if (splitStrTask.get(0).equals("x")) {
+            done = true;
+            splitStrTask.remove(0);
+        } else {
+            done = false;
+        }
 
         StringBuilder taskBuilder = new StringBuilder();
         for (String word: splitStrTask) {
-            // Parsing
             // Parse priority
             matcher = Pattern.compile("\\([A-Z]\\)").matcher(word);
             if (matcher.find()) { priority = matcher.group(); continue; }
@@ -37,9 +47,15 @@ public class Task {
 
             taskBuilder.append(word).append(" ");
         }
-
-
         task = taskBuilder.toString().trim();
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean val) {
+        done = val;
     }
 
     public String getStringPriority() {
@@ -76,19 +92,27 @@ public class Task {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
+        // isDone
+        if (done) stringBuilder.append("x ");
+        // Priority
         if (priority != null) stringBuilder.append(priority).append(" ");
+        // Task
         stringBuilder.append(task);
+        // Projects
         if (!projects.isEmpty()) {
             for (String project : projects) {
                 stringBuilder.append(" ").append("+").append(project);
             }
         }
+        // Tags
         if (!tags.isEmpty()) {
             for (String tag : tags) {
                 stringBuilder.append(" ").append("@").append(tag);
             }
         }
+        // toDate
         if (toDate != null) stringBuilder.append(" ").append("due:").append(toDate);
+
         return stringBuilder.toString();
     }
 }

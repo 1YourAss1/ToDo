@@ -50,6 +50,7 @@ public class ToDoTxtData {
         ArrayList<Task> taskArrayList = this.getDataFromToDoTxt();
         taskArrayList.remove(id);
         try {
+
             FileWriter writer = new FileWriter(toDoTxtFile);
             BufferedWriter bufferWriter = new BufferedWriter(writer);
             bufferWriter.write("");
@@ -64,4 +65,22 @@ public class ToDoTxtData {
         }
     }
 
+    public void updateDataInToDoTxt(Task updatedTask, int id) {
+        ArrayList<Task> taskArrayList = this.getDataFromToDoTxt();
+        taskArrayList.set(id, updatedTask);
+        try {
+
+            FileWriter writer = new FileWriter(toDoTxtFile);
+            BufferedWriter bufferWriter = new BufferedWriter(writer);
+            bufferWriter.write("");
+            writer = new FileWriter(toDoTxtFile, true);
+            bufferWriter = new BufferedWriter(writer);
+            for (Task task : taskArrayList) {
+                bufferWriter.write(task.toString() + "\n");
+            }
+            bufferWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

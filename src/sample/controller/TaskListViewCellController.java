@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import sample.model.Task;
+import sample.model.ToDoTxtData;
 
 import java.io.IOException;
 
@@ -31,6 +32,7 @@ public class TaskListViewCellController extends ListCell<Task> {
         }
     }
 
+
     @Override
     protected void updateItem(Task task, boolean empty) {
         super.updateItem(task, empty);
@@ -45,6 +47,9 @@ public class TaskListViewCellController extends ListCell<Task> {
                 labelPriority.setTextFill(getPriorityColor(task.getIntPriority()));
                 labelPriority.setPadding(new Insets(0, 5, 0, 0));
             }
+
+            // CheckBox
+//            checkBoxDone.setSelected(task.isDone());
 
             // Custom task
             labelTask.setText(task.getTask());
