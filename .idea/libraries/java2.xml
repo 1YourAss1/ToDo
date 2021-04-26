@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="java">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5-cache/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5-cache/src/test/java" />
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5-fluent/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5-fluent/src/test/java" />
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5-testing/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5-testing/src/test/java" />
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5-win/src/examples" />
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5-win/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/../../httpcomponents-client-5.0.3-src.zip!/httpcomponents-client-5.0.3/httpclient5/src/test/java" />
+    </SOURCES>
+  </library>
+</component>

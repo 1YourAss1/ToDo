@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 public class ToDoTxtData {
     private final File toDoTxtFile;
+    Synchronization synchronization = new Synchronization();
 
     public ToDoTxtData() {
         this.toDoTxtFile = new File("todo.txt");
@@ -41,6 +42,8 @@ public class ToDoTxtData {
             BufferedWriter bufferWriter = new BufferedWriter(writer);
             bufferWriter.write(task.toString() + "\n");
             bufferWriter.close();
+
+            synchronization.Synchronize(toDoTxtFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,6 +63,8 @@ public class ToDoTxtData {
                 bufferWriter.write(task.toString() + "\n");
             }
             bufferWriter.close();
+
+            synchronization.Synchronize(toDoTxtFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,6 +84,8 @@ public class ToDoTxtData {
                 bufferWriter.write(task.toString() + "\n");
             }
             bufferWriter.close();
+
+            synchronization.Synchronize(toDoTxtFile);
         } catch (Exception e) {
             e.printStackTrace();
         }

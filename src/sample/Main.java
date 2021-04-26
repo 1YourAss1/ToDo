@@ -6,11 +6,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sample.model.Synchronization;
+
+import java.io.File;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        new Synchronization().Synchronize(new File("todo.txt"));
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("view/mainView.fxml"));
         Parent root = loader.load();
 //        root.getStylesheets().addAll("style.css");
