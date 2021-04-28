@@ -7,14 +7,13 @@ import java.util.regex.Pattern;
 
 public class Task {
     private boolean done;
-    private String priority, toDate;
-    private String task;
-    private final ArrayList<String> projects;
+    private String priority, toDate, project;
+    private final String task;
+//    private final String project;
     private final ArrayList<String> tags;
 
     public Task(String strTask) {
         Matcher matcher;
-        projects = new ArrayList<>();
         tags = new ArrayList<>();
         ArrayList<String> splitStrTask = new ArrayList<>(Arrays.asList(strTask.trim().split(" ")));
 
@@ -35,7 +34,7 @@ public class Task {
 
             // Parse projects
             matcher = Pattern.compile("^\\+").matcher(word);
-            if (matcher.find()) { projects.add(word.substring(1)); continue; }
+            if (matcher.find()) { project = word.substring(1); continue; }
 
             // Parse labels
             matcher = Pattern.compile("^@").matcher(word);
@@ -77,8 +76,8 @@ public class Task {
         return task;
     }
 
-    public ArrayList<String> getProjects() {
-        return projects;
+    public String getProject() {
+        return project;
     }
 
     public ArrayList<String> getTags() {
@@ -98,12 +97,8 @@ public class Task {
         if (priority != null) stringBuilder.append(priority).append(" ");
         // Task
         stringBuilder.append(task);
-        // Projects
-        if (!projects.isEmpty()) {
-            for (String project : projects) {
-                stringBuilder.append(" ").append("+").append(project);
-            }
-        }
+        // Project
+        if (project != null) stringBuilder.append(" ").append("+").append(project);
         // Tags
         if (!tags.isEmpty()) {
             for (String tag : tags) {

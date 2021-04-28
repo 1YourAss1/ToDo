@@ -12,16 +12,16 @@ import java.util.List;
 
 public class Synchronization {
 
-    private static final String PATH = "http://109.225.41.139/owncloud/remote.php/webdav/ToDo/";
 
-    public void Synchronize (File todoFile) {
-        Sardine sardine = SardineFactory.begin("login", "password");
+
+    public void Synchronize (String path, String login, String pass, File todoFile) {
+        Sardine sardine = SardineFactory.begin(login, pass);
         try {
-            if (!sardine.exists(PATH)) sardine.createDirectory(PATH);
+            if (!sardine.exists(path)) sardine.createDirectory(path);
 
-            sardine.put(PATH + "todo.txt", Files.readAllBytes(todoFile.toPath()));
+            sardine.put(path + "todo.txt", Files.readAllBytes(todoFile.toPath()));
 
-            List<DavResource> resources = sardine.list(PATH);
+            List<DavResource> resources = sardine.list(path);
             for (DavResource res : resources)
             {
                 System.out.println(res);

@@ -43,7 +43,7 @@ public class ToDoTxtData {
             bufferWriter.write(task.toString() + "\n");
             bufferWriter.close();
 
-            synchronization.Synchronize(toDoTxtFile);
+//            synchronization.Synchronize(toDoTxtFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,7 +64,7 @@ public class ToDoTxtData {
             }
             bufferWriter.close();
 
-            synchronization.Synchronize(toDoTxtFile);
+//            synchronization.Synchronize(toDoTxtFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,7 +85,7 @@ public class ToDoTxtData {
             }
             bufferWriter.close();
 
-            synchronization.Synchronize(toDoTxtFile);
+//            synchronization.Synchronize(toDoTxtFile);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -2,23 +2,32 @@ package sample.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import sample.Main;
 import sample.model.Synchronization;
 import sample.model.Task;
 import sample.model.ToDoTxtData;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class MainController implements Initializable {
+    @FXML
+    MenuButton tagsMenuButton;
     @FXML
     TextField textFieldNewTask;
     @FXML
@@ -29,7 +38,9 @@ public class MainController implements Initializable {
     ObservableList<String> prioritiesObservableList = FXCollections.observableArrayList();
     ObservableList<Task> taskObservableList = FXCollections.observableArrayList();
 
+    File todoFile = new File("todo.txt");
     ToDoTxtData toDoTxtData = new ToDoTxtData();
+    Synchronization synchronization = new Synchronization();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -39,8 +50,7 @@ public class MainController implements Initializable {
         prioritiesObservableList.addAll(priorityArrayList.toArray(new String[0]));
         priorityComboBox.getItems().setAll(prioritiesObservableList);
 
-        // Add data to ListView
-        refreshListView();
+        createTagsMenuButton();
 
         // Custom ListView
         listViewTasks.setCellFactory(taskListView -> {
@@ -50,7 +60,7 @@ public class MainController implements Initializable {
             MenuItem editItem = new MenuItem();
             editItem.setText("Edit");
             editItem.setOnAction(event -> {
-                taskListCell.setEditable(true);
+//                taskListCell.setEditable(true);
 //                toDoTxtData.removeDataFromToDoTxt(taskListCell.getIndex());
 //                refreshListView();
             });
@@ -73,6 +83,7 @@ public class MainController implements Initializable {
 
             return taskListCell;
         });
+        refreshListView();
     }
 
     @FXML
@@ -89,12 +100,50 @@ public class MainController implements Initializable {
         priorityComboBox.getSelectionModel().clearSelection();
     }
 
+    private void createTagsMenuButton() {
+        CustomMenuItem customMenuItem = new CustomMenuItem();
+        CheckBox checkBox = new CheckBox();
+        checkBox.setText("test");
+        customMenuItem.setContent(checkBox);
+        customMenuItem.setHideOnClick(false);
+        tagsMenuButton.getItems().add(customMenuItem);
+    }
+
     private void refreshListView() {
         ArrayList<Task> arrayList = toDoTxtData.getDataFromToDoTxt();
         taskObservableList = FXCollections.observableArrayList(arrayList);
         listViewTasks.setItems(taskObservableList);
     }
 
+    // Menu Items
+    public void onMenuItemSynchronize() {
+        Preferences preferences = Preferences.userNodeForPackage(Main.class);
+        String url = preferences.get("url", "Url");
+        String login = preferences.get("login", "Login");
+        String pass = preferences.get("password", "Password");
+
+        synchronization.Synchronize(url, login, pass,todoFile);
+    }
+
+    public void onMenuItemExit() {
+        System.exit(0);
+    }
+
+    public void onMenuItemSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/settingsView.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Settings");
+            stage.setResizable(false);
+            stage.setScene(new Scene(root, 300, 300));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Custom ListView
     class TaskListCell extends ListCell<Task> {
         @FXML
         Label labelTask, labelPriority, labelProjects, labelTags, labelToDate;
@@ -153,21 +202,16 @@ public class MainController implements Initializable {
             // Custom task
             labelTask.setText(task.getTask());
 
-            StringBuilder stringBuilder;
             // Custom projects
-            if (!task.getProjects().isEmpty()) {
-                stringBuilder = new StringBuilder();
-                for (String project: task.getProjects()) {
-                    stringBuilder.append(project).append(" ");
-                }
-                labelProjects.setText(stringBuilder.toString().trim());
+            if (task.getProject() != null) {
+                labelProjects.setText(task.getProject());
                 labelProjects.setTextFill(Color.GREEN);
                 labelProjects.setPadding(new Insets(0, 0, 0, 5));
             }
 
             // Custom tags
             if (!task.getTags().isEmpty()) {
-                stringBuilder = new StringBuilder();
+                StringBuilder stringBuilder = new StringBuilder();
                 for (String tags: task.getTags()) {
                     stringBuilder.append(tags).append(" ");
                 }
