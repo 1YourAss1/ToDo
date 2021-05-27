@@ -3,6 +3,7 @@ package sample.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -12,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sample.Main;
 import sample.model.Synchronization;
@@ -21,36 +23,34 @@ import sample.model.ToDoTxtData;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.prefs.Preferences;
 
 public class MainController implements Initializable {
     @FXML
-    MenuButton tagsMenuButton;
+    private MenuButton tagsMenuButton;
     @FXML
-    TextField textFieldNewTask;
+    private TextField textFieldNewTask;
     @FXML
-    ListView<Task> listViewTasks;
+    private ListView<Task> listViewTasks;
     @FXML
-    ComboBox<String> priorityComboBox;
+    private ComboBox<String> priorityComboBox;
 
-    ObservableList<String> prioritiesObservableList = FXCollections.observableArrayList();
-    ObservableList<Task> taskObservableList = FXCollections.observableArrayList();
+    private final ObservableList<String> prioritiesObservableList = FXCollections.observableArrayList();
+    private Set<String> tagsSet;
 
-    File todoFile = new File("todo.txt");
-    ToDoTxtData toDoTxtData = new ToDoTxtData();
-    Synchronization synchronization = new Synchronization();
+    private final File todoFile = new File("todo.txt");
+    private final ToDoTxtData toDoTxtData = new ToDoTxtData();
+    private final Synchronization synchronization = new Synchronization();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        tagsSet = new LinkedHashSet<>();
         // Fill priority ComboBox
         ArrayList<String> priorityArrayList = new ArrayList<>();
         for (char c = 'A'; c <= 'Z'; c++) priorityArrayList.add("(" + c + ")");
         prioritiesObservableList.addAll(priorityArrayList.toArray(new String[0]));
         priorityComboBox.getItems().setAll(prioritiesObservableList);
-
-        createTagsMenuButton();
 
         // Custom ListView
         listViewTasks.setCellFactory(taskListView -> {
@@ -83,15 +83,31 @@ public class MainController implements Initializable {
 
             return taskListCell;
         });
+
+        // Fill ListView
         refreshListView();
+
     }
 
-    @FXML
     public void onEnter(){
         // Create task string
         StringBuilder strTask = new StringBuilder();
+        // Priority
         if (priorityComboBox.getSelectionModel().getSelectedIndex() != -1) strTask.append(priorityComboBox.getSelectionModel().getSelectedItem()).append(" ");
+        // Task
         strTask.append(textFieldNewTask.getText());
+        // Tags
+        ObservableList<MenuItem> menuButtonItems = tagsMenuButton.getItems();
+        for (int i = 2; i < menuButtonItems.size(); i++) {
+            CustomMenuItem customMenuItem = (CustomMenuItem) menuButtonItems.get(i);
+            CheckBox checkBox = (CheckBox) customMenuItem.getContent();
+            if (checkBox.isSelected()) {
+                strTask.append(" ").append("@").append(checkBox.getText());
+            }
+
+        }
+
+
         // Add and refresh
         toDoTxtData.addDataToToDoTxt(new Task(strTask.toString()));
         refreshListView();
@@ -100,19 +116,46 @@ public class MainController implements Initializable {
         priorityComboBox.getSelectionModel().clearSelection();
     }
 
-    private void createTagsMenuButton() {
-        CustomMenuItem customMenuItem = new CustomMenuItem();
-        CheckBox checkBox = new CheckBox();
-        checkBox.setText("test");
-        customMenuItem.setContent(checkBox);
-        customMenuItem.setHideOnClick(false);
-        tagsMenuButton.getItems().add(customMenuItem);
+    public void createTagsMenuButton(Set<String> tags) {
+        tagsMenuButton.getItems().clear();
+        MenuItem addTagMenuItem = new MenuItem("Add tag");
+        addTagMenuItem.setOnAction(actionEvent -> {
+            TextInputDialog textInputDialog = new TextInputDialog();
+            textInputDialog.setHeaderText(null);
+            textInputDialog.setGraphic(null);
+            textInputDialog.setTitle("Add new tag");
+            textInputDialog.setContentText("New tag: ");
+            textInputDialog.showAndWait()
+                    .filter(res -> !res.isEmpty() && res.split(" ").length == 1)
+                    .ifPresent(res -> {
+                        tagsSet.add(res);
+                        CheckBox checkBox = new CheckBox(res);
+                        checkBox.setSelected(true);
+                        CustomMenuItem customMenuItem = new CustomMenuItem(checkBox);
+                        customMenuItem.setHideOnClick(false);
+                        tagsMenuButton.getItems().add(customMenuItem);
+                    });
+        });
+        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
+        tagsMenuButton.getItems().addAll(addTagMenuItem, separatorMenuItem);
+
+        for (String tag: tags) {
+            CustomMenuItem customMenuItem = new CustomMenuItem(new CheckBox(tag));
+            customMenuItem.setHideOnClick(false);
+            tagsMenuButton.getItems().add(customMenuItem);
+        }
     }
 
     private void refreshListView() {
-        ArrayList<Task> arrayList = toDoTxtData.getDataFromToDoTxt();
-        taskObservableList = FXCollections.observableArrayList(arrayList);
+        ArrayList<Task> arrayListTask = toDoTxtData.getDataFromToDoTxt();
+        ObservableList<Task> taskObservableList = FXCollections.observableArrayList(arrayListTask);
         listViewTasks.setItems(taskObservableList);
+
+        tagsSet.clear();
+        for (Task task: arrayListTask) {
+            tagsSet.addAll(task.getTags());
+        }
+        createTagsMenuButton(tagsSet);
     }
 
     // Menu Items
@@ -137,11 +180,13 @@ public class MainController implements Initializable {
             stage.setTitle("Settings");
             stage.setResizable(false);
             stage.setScene(new Scene(root, 300, 300));
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     // Custom ListView
     class TaskListCell extends ListCell<Task> {

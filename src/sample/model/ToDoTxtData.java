@@ -22,9 +22,9 @@ public class ToDoTxtData {
 
     public ArrayList<Task> getDataFromToDoTxt() {
         ArrayList<Task> taskArrayList = new ArrayList<>();
-        try {
-            FileReader reader = new FileReader(toDoTxtFile);
-            BufferedReader bufferedReader = new BufferedReader(reader);
+        try (FileReader reader = new FileReader(toDoTxtFile);
+             BufferedReader bufferedReader = new BufferedReader(reader)) {
+
             String line = bufferedReader.readLine();
             while (line != null && !line.isEmpty()) {
                 taskArrayList.add(new Task(line));
@@ -37,11 +37,10 @@ public class ToDoTxtData {
     }
 
     public void addDataToToDoTxt(Task task) {
-        try {
-            FileWriter writer = new FileWriter(toDoTxtFile, true);
-            BufferedWriter bufferWriter = new BufferedWriter(writer);
+        try (FileWriter writer = new FileWriter(toDoTxtFile, true);
+             BufferedWriter bufferWriter = new BufferedWriter(writer)) {
+
             bufferWriter.write(task.toString() + "\n");
-            bufferWriter.close();
 
 //            synchronization.Synchronize(toDoTxtFile);
         } catch (Exception e) {
@@ -52,17 +51,13 @@ public class ToDoTxtData {
     public void removeDataFromToDoTxt(int id) {
         ArrayList<Task> taskArrayList = this.getDataFromToDoTxt();
         taskArrayList.remove(id);
-        try {
+        try (FileWriter writer = new FileWriter(toDoTxtFile);
+             BufferedWriter bufferWriter = new BufferedWriter(writer)) {
 
-            FileWriter writer = new FileWriter(toDoTxtFile);
-            BufferedWriter bufferWriter = new BufferedWriter(writer);
             bufferWriter.write("");
-            writer = new FileWriter(toDoTxtFile, true);
-            bufferWriter = new BufferedWriter(writer);
             for (Task task : taskArrayList) {
                 bufferWriter.write(task.toString() + "\n");
             }
-            bufferWriter.close();
 
 //            synchronization.Synchronize(toDoTxtFile);
         } catch (Exception e) {
@@ -73,17 +68,13 @@ public class ToDoTxtData {
     public void updateDataInToDoTxt(Task updatedTask, int id) {
         ArrayList<Task> taskArrayList = this.getDataFromToDoTxt();
         taskArrayList.set(id, updatedTask);
-        try {
+        try (FileWriter writer = new FileWriter(toDoTxtFile);
+             BufferedWriter bufferWriter = new BufferedWriter(writer)) {
 
-            FileWriter writer = new FileWriter(toDoTxtFile);
-            BufferedWriter bufferWriter = new BufferedWriter(writer);
             bufferWriter.write("");
-            writer = new FileWriter(toDoTxtFile, true);
-            bufferWriter = new BufferedWriter(writer);
             for (Task task : taskArrayList) {
                 bufferWriter.write(task.toString() + "\n");
             }
-            bufferWriter.close();
 
 //            synchronization.Synchronize(toDoTxtFile);
         } catch (Exception e) {

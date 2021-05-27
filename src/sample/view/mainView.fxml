@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.input.KeyCodeCombination?>
@@ -70,7 +66,12 @@
       <children>
          <ComboBox fx:id="priorityComboBox" prefWidth="60.0" />
          <TextField fx:id="textFieldNewTask" onAction="#onEnter" HBox.hgrow="ALWAYS" />
-         <MenuButton fx:id="tagsMenuButton" mnemonicParsing="false" text="Tags"/>
+         <MenuButton fx:id="tagsMenuButton" mnemonicParsing="false" text="Tags">
+            <items>
+               <MenuItem mnemonicParsing="false" text="Add tag..." />
+               <SeparatorMenuItem mnemonicParsing="false" />
+            </items>
+         </MenuButton>
 
          <DatePicker prefWidth="100.0" />
       </children>
