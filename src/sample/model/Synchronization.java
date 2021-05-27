@@ -25,23 +25,6 @@ public class Synchronization extends Task<Void> {
         this.todoFile = todoFile;
     }
 
-//    public void Synchronize (String path, String login, String pass, File todoFile) {
-//        Sardine sardine = SardineFactory.begin(login, pass);
-//        try {
-//            if (!sardine.exists(path)) sardine.createDirectory(path);
-//
-//            sardine.put(path + "todo.txt", Files.readAllBytes(todoFile.toPath()));
-//
-//            List<DavResource> resources = sardine.list(path);
-//            for (DavResource res : resources)
-//            {
-//                System.out.println(res);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     @Override
     protected Void call() {
         Sardine sardine = SardineFactory.begin(login, pass);
