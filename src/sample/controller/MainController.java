@@ -1,5 +1,7 @@
 package sample.controller;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,10 +10,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -23,10 +27,16 @@ import sample.model.ToDoTxtData;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.prefs.Preferences;
 
 public class MainController implements Initializable {
+    @FXML
+    public DatePicker datePicker;
+    @FXML
+    public MenuButton projectMenuButton;
+    public Label synchronizeLabel;
     @FXML
     private MenuButton tagsMenuButton;
     @FXML
@@ -37,15 +47,17 @@ public class MainController implements Initializable {
     private ComboBox<String> priorityComboBox;
 
     private final ObservableList<String> prioritiesObservableList = FXCollections.observableArrayList();
-    private Set<String> tagsSet;
+    private Set<String> tagsSet, projectSet;
 
     private final File todoFile = new File("todo.txt");
     private final ToDoTxtData toDoTxtData = new ToDoTxtData();
-    private final Synchronization synchronization = new Synchronization();
+
+    private Synchronization synchronizationTask;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         tagsSet = new LinkedHashSet<>();
+        projectSet = new LinkedHashSet<>();
         // Fill priority ComboBox
         ArrayList<String> priorityArrayList = new ArrayList<>();
         for (char c = 'A'; c <= 'Z'; c++) priorityArrayList.add("(" + c + ")");
@@ -87,6 +99,9 @@ public class MainController implements Initializable {
         // Fill ListView
         refreshListView();
 
+        synchronizationTask = new Synchronization();
+        synchronizeLabel.textProperty().bind(synchronizationTask.messageProperty());
+
     }
 
     public void onEnter(){
@@ -96,17 +111,29 @@ public class MainController implements Initializable {
         if (priorityComboBox.getSelectionModel().getSelectedIndex() != -1) strTask.append(priorityComboBox.getSelectionModel().getSelectedItem()).append(" ");
         // Task
         strTask.append(textFieldNewTask.getText());
+        // Project
+        ObservableList<MenuItem> projectMenuButtonItems = projectMenuButton.getItems();
+        for (int i = 2; i < projectMenuButtonItems.size(); i++) {
+            RadioMenuItem radioMenuItem = (RadioMenuItem) projectMenuButtonItems.get(i);
+            if (radioMenuItem.isSelected()) {
+                strTask.append(" ").append("+").append(radioMenuItem.getText());
+            }
+        }
         // Tags
-        ObservableList<MenuItem> menuButtonItems = tagsMenuButton.getItems();
-        for (int i = 2; i < menuButtonItems.size(); i++) {
-            CustomMenuItem customMenuItem = (CustomMenuItem) menuButtonItems.get(i);
+        ObservableList<MenuItem> tagsMenuButtonItems = tagsMenuButton.getItems();
+        for (int i = 2; i < tagsMenuButtonItems.size(); i++) {
+            CustomMenuItem customMenuItem = (CustomMenuItem) tagsMenuButtonItems.get(i);
             CheckBox checkBox = (CheckBox) customMenuItem.getContent();
             if (checkBox.isSelected()) {
                 strTask.append(" ").append("@").append(checkBox.getText());
             }
-
         }
-
+        // Due Date
+        LocalDate dueDate = datePicker.getValue();
+        if (dueDate != null) {
+            strTask.append(" due:").append(dueDate);
+            datePicker.getEditor().clear();
+        }
 
         // Add and refresh
         toDoTxtData.addDataToToDoTxt(new Task(strTask.toString()));
@@ -114,6 +141,37 @@ public class MainController implements Initializable {
         // Clear fo new task
         textFieldNewTask.setText(null);
         priorityComboBox.getSelectionModel().clearSelection();
+    }
+
+    public void createProjectMenuButton(Set<String> projects) {
+        ToggleGroup toggleGroup = new ToggleGroup();
+        projectMenuButton.getItems().clear();
+        MenuItem addProjectMenuItem = new MenuItem("Add project");
+        addProjectMenuItem.setOnAction(actionEvent -> {
+            TextInputDialog textInputDialog = new TextInputDialog();
+            textInputDialog.setHeaderText(null);
+            textInputDialog.setGraphic(null);
+            textInputDialog.setTitle("Add new project");
+            textInputDialog.setContentText("New project: ");
+            textInputDialog.showAndWait()
+                    .filter(res -> !res.isEmpty() && res.split(" ").length == 1)
+                    .ifPresent(res -> {
+                        projectSet.add(res);
+                        RadioMenuItem radioMenuItem = new RadioMenuItem(res);
+                        radioMenuItem.setToggleGroup(toggleGroup);
+                        radioMenuItem.setSelected(true);
+                        projectMenuButton.getItems().add(radioMenuItem);
+                    });
+        });
+        SeparatorMenuItem separatorMenuItem = new SeparatorMenuItem();
+        projectMenuButton.getItems().addAll(addProjectMenuItem, separatorMenuItem);
+
+
+        for (String project: projects) {
+            RadioMenuItem radioMenuItem = new RadioMenuItem(project);
+            radioMenuItem.setToggleGroup(toggleGroup);
+            projectMenuButton.getItems().add(radioMenuItem);
+        }
     }
 
     public void createTagsMenuButton(Set<String> tags) {
@@ -151,10 +209,13 @@ public class MainController implements Initializable {
         ObservableList<Task> taskObservableList = FXCollections.observableArrayList(arrayListTask);
         listViewTasks.setItems(taskObservableList);
 
+        projectSet.clear();
         tagsSet.clear();
         for (Task task: arrayListTask) {
+            if (task.getProject() != null) projectSet.add(task.getProject());
             tagsSet.addAll(task.getTags());
         }
+        createProjectMenuButton(projectSet);
         createTagsMenuButton(tagsSet);
     }
 
@@ -165,7 +226,8 @@ public class MainController implements Initializable {
         String login = preferences.get("login", "Login");
         String pass = preferences.get("password", "Password");
 
-        synchronization.Synchronize(url, login, pass,todoFile);
+        synchronizationTask.setParameters(url, login, pass,todoFile);
+        new Thread(synchronizationTask).start();
     }
 
     public void onMenuItemExit() {
