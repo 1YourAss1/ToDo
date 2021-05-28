@@ -1,21 +1,15 @@
 package sample.controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -28,7 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 public class MainController implements Initializable {
@@ -51,8 +48,6 @@ public class MainController implements Initializable {
 
     private final File todoFile = new File("todo.txt");
     private final ToDoTxtData toDoTxtData = new ToDoTxtData();
-
-    private Synchronization synchronizationTask;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -98,10 +93,7 @@ public class MainController implements Initializable {
 
         // Fill ListView
         refreshListView();
-
-        synchronizationTask = new Synchronization();
-        synchronizeLabel.textProperty().bind(synchronizationTask.messageProperty());
-
+        synchronise();
     }
 
     public void onEnter(){
@@ -219,15 +211,23 @@ public class MainController implements Initializable {
         createTagsMenuButton(tagsSet);
     }
 
-    // Menu Items
-    public void onMenuItemSynchronize() {
+    private void synchronise() {
         Preferences preferences = Preferences.userNodeForPackage(Main.class);
         String url = preferences.get("url", "Url");
         String login = preferences.get("login", "Login");
         String pass = preferences.get("password", "Password");
 
-        synchronizationTask.setParameters(url, login, pass,todoFile);
+        Synchronization synchronizationTask = new Synchronization(url, login, pass,todoFile);
+        synchronizationTask.setOnSucceeded(workerStateEvent -> refreshListView());
+        synchronizeLabel.textProperty().bind(synchronizationTask.messageProperty());
         new Thread(synchronizationTask).start();
+
+        refreshListView();
+    }
+
+    // Menu Items
+    public void onMenuItemSynchronize() {
+        synchronise();
     }
 
     public void onMenuItemExit() {
