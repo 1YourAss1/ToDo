@@ -236,7 +236,7 @@ public class MainController implements Initializable {
 
     public void onMenuItemSettings() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/settingsView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample/view/settingsView.fxml"));
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Settings");
@@ -261,7 +261,7 @@ public class MainController implements Initializable {
 
         public TaskListCell() {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/taskCellView.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample/view/taskCellView.fxml"));
                 loader.setController(this);
                 loader.load();
             }

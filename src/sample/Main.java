@@ -14,13 +14,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-//        new Synchronization().Synchronize(new File("todo.txt"));
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/mainView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample/view/mainView.fxml"));
         Parent root = loader.load();
-//        root.getStylesheets().addAll("style.css");
         primaryStage.setTitle("ToDo");
-//        primaryStage.setResizable(false);
         primaryStage.setMinHeight(400);
         primaryStage.setMinWidth(600);
         primaryStage.setScene(new Scene(root, 600, 400));
